@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/es/img/favicon.ico?v=a8def514be8a">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/1.4.0/css/ngDialog.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/1.4.0/css/ngDialog-theme-default.min.css">
+    <link rel="stylesheet" href="index.css">
+    <title>Aplicacion Empleados</title>
+</head>
+<body ng-app="myApp" ng-controller="myAppController">
+    <div class="container-fluid">
+            <h1>Aplicacion Empleados</h1>
+            <div id="mostrarEmpleados">
+                <label class="label label-info"> Mostrar Tabla Empleados</label>
+                <input type="checkbox" ng-model="tabla">
+                <div ng-show="tabla">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Indice</th>
+                                <th>Foto</th>
+                                <th ng-click="ordenar('dni')">DNI</th>
+                                <th ng-click="ordenar('nombre')">Nombre</th>
+                                <th ng-click="ordenar('apellido')">Apellido</th>
+                                <th ng-click="ordenar('edad')">Edad</th>
+                                <th ng-click="ordenar('sueldo')">Sueldo</th>
+                                <th>Beneficio</th>
+                                <th>Descripcion</th>
+                                <th>Coaching</th>
+                                <th>Eliminar</th>
+                                <th>Editar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th><input class="form-control" type="number" ng-model="query.dni"></th>
+                                <th><input class="form-control" type="text" ng-model="query.nombre"></th>
+                                <th><input class="form-control" type="text" ng-model="query.apellido"></th>
+                                <th><input class="form-control" type="number" ng-model="query.edad"></th>
+                                <th><input class="form-control" type="number" ng-model="query.sueldo"></th>
+                                <th><input class="form-control" type="number" ng-model="query.beneficioEmpresa"></th>
+                                <th><input class="form-control" type="text" ng-model="query.descripcion"></th>
+                                <th><input class="form-control" type="bool" ng-model="query.coaching"></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr ng-repeat="empleado in listaEmpleados | filter:query | orderBy: orden">
+                                <th>{{$index + 1}}</th>
+                                <th><img ng-src = {{empleado.foto}} /></th>
+                                <th>{{empleado.dni}}</th>
+                                <th>{{empleado.nombre}}</th>
+                                <th>{{empleado.apellido | uppercase }}</th>
+                                <th>{{empleado.edad}}</th>
+                                <th>{{empleado.sueldo | currency: '$':1}}</th>
+                                <th>{{empleado.beneficioEmpresa}}</th>
+                                <th>{{empleado.descripcion}}</th>
+                                <th>{{empleado.coaching}}</th>
+                                <th><button class="btn btn-warning" ng-click="quitarEmpleado($index)">Eliminar</button></th>
+                                <th><button class="btn btn-info" ng-click="showForm(empleado)">Editar</button></th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+            <div class="alert alert-info">
+                Los empleados que recibieron entranamiento son: {{contarEmpleados()}} de un total de {{listaEmpleados.length}}
+            </div>
+    
+            <div>
+                <label class="label label-success">Agregar Nuevo Empleado</label>
+                <input type="checkbox" ng-model="agregarNuevoEmpleado">
+                <div ng-if="agregarNuevoEmpleado">
+                    <form class="form-inline" name="nuevoRegistro" novalidate>
+                        <div class="form-group">
+                            <label>DNI<input class="form-control" name="dni" type="number" ng-model="nuevoEmpleado.dni" dni ng-required="true"></label>
+                            <div ng-show="nuevoRegistro.dni.$touched" ng-messages="nuevoRegistro.dni.$error">
+                                <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                                <label>Foto<input class="form-control" name="foto" type="text" ng-model="nuevoEmpleado.foto"></label>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre:<input class="form-control" name="nombre" type="text" ng-model="nuevoEmpleado.nombre" ng-required="true" minlength="3"></label>
+                            <div ng-show="nuevoRegistro.nombre.$touched" ng-messages="nuevoRegistro.nombre.$error">
+                                    <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido:<input class="form-control" name="apellido" type="text" ng-model="nuevoEmpleado.apellido" ng-required="true" minlength="3"></label>
+                            <div ng-show="nuevoRegistro.apellido.$touched" ng-messages="nuevoRegistro.apellido.$error">
+                                    <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Edad:<input class="form-control" name="edad" type="number" ng-model="nuevoEmpleado.edad" ng-required="true"></label>
+                            <div ng-show="nuevoRegistro.edad.$touched" ng-messages="nuevoRegistro.edad.$error">
+                                    <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Sueldo:<input class="form-control" name="sueldo" type="number" ng-model="nuevoEmpleado.sueldo"></label>
+                            <div ng-show="nuevoRegistro.sueldo.$touched" ng-messages="nuevoRegistro.sueldo.$error">
+                                    <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Beneficio en la empresa:<input class="form-control" name="beneficio" type="number" ng-model="nuevoEmpleado.beneficioEmpresa"></label>
+                            <div ng-show="nuevoRegistro.beneficioEmpresa.$touched" ng-messages="nuevoRegistro.beneficioEmpresa.$error">
+                                <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripcion:<input class="form-control" name="descripcion" type="text" ng-model="nuevoEmpleado.descripcion" maxlength="50"></label>
+                            <div ng-show="nuevoRegistro.beneficioEmpresa.$touched" ng-messages="nuevoRegistro.descripcion.$error">
+                                <div ng-messages-include="mensajes.html"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Coaching:<input class="form-control" name="coaching" type="checkbox" ng-model="nuevoEmpleado.coaching"></label>
+                        </div>
+                        <div>
+                            <button class="btn btn-success" ng-click="agregarEmpleado(nuevoEmpleado)" ng-disabled="nuevoRegistro.$invalid">Guardar</button>
+                        </div>          
+                    </form>
+                </div>
+            </div>
+    
+            <div>
+                <h3>Ver Perfiles Destacados</h3>
+                <select ng-model="menuEmpleados" ng-options="empleado.dni for empleado in listaEmpleados">
+                    <option value="">Seleccionar Empleado</option>
+                </select>
+                <div ng-if="menuEmpleados" id="panelEmpleados">
+                    <div class="panel panel-primary">
+                            <div class="panel-heading"><img ng-src="{{menuEmpleados.foto}}"/>{{menuEmpleados.nombre}} - {{menuEmpleados.apellido}}</div>
+                            <div class="panel-body">{{menuEmpleados.descripcion}}</div>
+                    </div>
+                </div>
+            </div>
+    
+            <div ng-include="'footer.html'"></div>
+    </div>
+    <script type="text/javascript" src="listaEmpleados.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-route.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-messages.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ng-dialog/1.4.0/js/ngDialog.min.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+</html>

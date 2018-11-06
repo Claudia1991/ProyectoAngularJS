@@ -1,0 +1,25 @@
+*{
+    margin: 0%;
+    padding: 0%;
+}
+h1{
+    color: lightskyblue;
+    font-family: 'Courier New', Courier, monospace;
+    text-decoration-line: underline;
+}
+img{
+    /* width: 50px;
+    height: 55px; */
+    display: inline;
+}
+h3{
+    color: lightskyblue;
+    font-family: 'Courier New', Courier, monospace;
+    text-decoration-line: underline;
+}
+.alert{
+    width: 50%;
+}
+#panelEmpleados{
+    width: 50%;
+}
